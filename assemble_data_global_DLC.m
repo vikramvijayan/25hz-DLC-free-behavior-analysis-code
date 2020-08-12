@@ -21,7 +21,6 @@
 % csv{5} = 'fly8_ALL_ffmpegDeepCut_resnet50_GPU_07232019Jul23shuffle1_1030000.csv';
 %  lengths_to_use = [inf,inf,295000,355500, 175200];
 %[eggs, trx] = assemble_data_global_DLC(csv, egg, 0, 0, 0, 30, inf,lengths_to_use);
-%
 
 
 % R65H10 chrimson
