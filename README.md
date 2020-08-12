@@ -13,6 +13,15 @@ csv{5} = 'fly8_ALL_ffmpegDeepCut_resnet50_GPU_07232019Jul23shuffle1_1030000.csv'
 lengths_to_use = [inf,inf,295000,355500, 175200];
 [eggs, trx] = assemble_data_global_DLC(csv, egg, 0, 0, 0, 30, inf,lengths_to_use);
 
+The .csv files are output from running DeepLabCut.
+
+Typical models used are:
+1) GPU_07232019-Vikram-2019-07-23
+2) GPU_07232019-Vikram-2019-07-23_thorax
+3) GPU_07232019-Vikram-2019-07-23_thorax_noegg
+
+The models are slightly different in how they annotate positions on the fly body. In the end the 1st model is the one I typically use.
+
 
 This takes the "trx" from Ctrax and a matrix of eggs (each column is filled with the egg-laying frame times of the corresponding fly in trx) and creates a new "trx" as well as a egg" structure. These structures have a lot of parameters about each individual egg that are calculated from the data. 
 
