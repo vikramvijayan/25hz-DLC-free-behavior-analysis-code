@@ -84,44 +84,44 @@ for fly_num = 1:1:length(csv)
     % .99 to .9
     % 20 to 2000
     %filtering
-%     for i = 2:1:(length(bodypart(19,:)))
-%         if(bodypart(21,i) < .95 || abs(bodypart(19,i)-bodypart(19,i-1)) > 10)
-%             bodypart(19,i) = NaN;
-%             bodypart(20,i) = NaN;
-%         end
-%         if(bodypart(21,i) < .95 || abs(bodypart(20,i)-bodypart(20,i-1)) > 10)
-%             bodypart(19,i) = NaN;
-%             bodypart(20,i) = NaN;
-%         end
-%         
-%         if(bodypart(24,i) < .95 || abs(bodypart(22,i)-bodypart(22,i-1)) > 10)
-%             bodypart(22,i) = NaN;
-%             bodypart(23,i) = NaN;
-%         end
-%         if(bodypart(24,i) < .95 || abs(bodypart(23,i)-bodypart(23,i-1)) > 10)
-%             bodypart(22,i) = NaN;
-%             bodypart(23,i) = NaN;
-%         end
-%         
-%         if(bodypart(27,i) < .95 || abs(bodypart(25,i)-bodypart(25,i-1)) > 10)
-%             bodypart(25,i) = NaN;
-%             bodypart(26,i) = NaN;
-%         end
-%         if(bodypart(27,i) < .95 || abs(bodypart(26,i)-bodypart(26,i-1)) > 10)
-%             bodypart(25,i) = NaN;
-%             bodypart(26,i) = NaN;
-%         end
-%         
-%         if(bodypart(30,i) < .1 || abs(bodypart(28,i)-bodypart(28,i-1)) > 50)
-%             bodypart(29,i) = NaN;
-%             bodypart(28,i) = NaN;
-%         end
-%         if(bodypart(30,i) < .1 || abs(bodypart(29,i)-bodypart(29,i-1)) > 50)
-%             bodypart(29,i) = NaN;
-%             bodypart(28,i) = NaN;
-%         end
-%     end
-%     
+    for i = 2:1:(length(bodypart(19,:)))
+        if(bodypart(21,i) < .95 || abs(bodypart(19,i)-bodypart(19,i-1)) > 10)
+            bodypart(19,i) = NaN;
+            bodypart(20,i) = NaN;
+        end
+        if(bodypart(21,i) < .95 || abs(bodypart(20,i)-bodypart(20,i-1)) > 10)
+            bodypart(19,i) = NaN;
+            bodypart(20,i) = NaN;
+        end
+        
+        if(bodypart(24,i) < .95 || abs(bodypart(22,i)-bodypart(22,i-1)) > 10)
+            bodypart(22,i) = NaN;
+            bodypart(23,i) = NaN;
+        end
+        if(bodypart(24,i) < .95 || abs(bodypart(23,i)-bodypart(23,i-1)) > 10)
+            bodypart(22,i) = NaN;
+            bodypart(23,i) = NaN;
+        end
+        
+        if(bodypart(27,i) < .95 || abs(bodypart(25,i)-bodypart(25,i-1)) > 10)
+            bodypart(25,i) = NaN;
+            bodypart(26,i) = NaN;
+        end
+        if(bodypart(27,i) < .95 || abs(bodypart(26,i)-bodypart(26,i-1)) > 10)
+            bodypart(25,i) = NaN;
+            bodypart(26,i) = NaN;
+        end
+        
+        if(bodypart(30,i) < .1 || abs(bodypart(28,i)-bodypart(28,i-1)) > 50)
+            bodypart(29,i) = NaN;
+            bodypart(28,i) = NaN;
+        end
+        if(bodypart(30,i) < .1 || abs(bodypart(29,i)-bodypart(29,i-1)) > 50)
+            bodypart(29,i) = NaN;
+            bodypart(28,i) = NaN;
+        end
+    end
+    
     
     tip_to_thorax_x = (bodypart(19,:)-bodypart(22,:))./pixels_per_mm;
     tip_to_thorax_y = (bodypart(20,:)-bodypart(23,:))./pixels_per_mm;

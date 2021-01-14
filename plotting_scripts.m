@@ -220,11 +220,14 @@ sp = []; pos = [];  th = []; sub = []; et = [];rt = [];
 for i =1:1:length(c)
     sp(i,:) = (trx(1,eggs.fly(c(i))).speed_2hz_hold((eggs.egg_time(c(i))-window_len):eggs.egg_time(c(i))+window_len));
     et(i) = (eggs.egg_time(c(i))-eggs.explore_start_time(c(i)))./2;
+        ovt(i) = (eggs.egg_time(c(i))-ovu_end_array(c(i)))./2;
+
 end
 [~, b] = sort(et);
 figure; imagesc(sp(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
 box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
 xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec), 2hz hold of individual egg-laying events'); colorbar;
+hold on; scatter(window_len-ovt(b).*2,1:1:length(ovt),8,'k','filled')
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(sp(b,:))./sqrt(length(b));
@@ -263,8 +266,12 @@ end
 sp = []; pos = [];  th = []; sub = []; et = [];rt = []; egg_time = [];
 
 for i =1:1:length(c)
-    sp(i,:) = (trx(1,eggs.fly(c(i))).speed((eggs.egg_time(c(i))-window_len):eggs.egg_time(c(i))+window_len));
+    sp(i,:) = (trx(1,eggs.fly(c(i))).speed_2hz_hold((eggs.egg_time(c(i))-window_len):eggs.egg_time(c(i))+window_len));
     et(i) = (eggs.egg_time(c(i))-eggs.explore_start_time(c(i)))./2;
+            ovt(i) = (eggs.egg_time(c(i))-ovu_end_array(c(i)))./2;
+    et_time(i) = eggs.explore_start_time(c(i));
+
+            ov_time(i) = ovu_end_array(c(i));
     egg_time(i) = eggs.egg_time(c(i));
     tip_to_thorax(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax((eggs.egg_time(c(i))-window_len):eggs.egg_time(c(i))+window_len));
     tip_to_thorax_x(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax_x((eggs.egg_time(c(i))-window_len):eggs.egg_time(c(i))+window_len));
@@ -290,77 +297,102 @@ for i =1:1:length(c)
     
     
 end
-
-%% plot an individual trace
+% 
+% %% plot an individual trace
 i = 116;
-figure; plot(smoothdata(sp(i,:),'movmean',1,'includenan')); yyaxis right; plot(smoothdata(head_to_tip(i,:)','movmean',50,'includenan'))
- 
-q = egg_time - egg_time(116)+12000;
-line([q(116),q(116)],[-10,10])
+i = 45;
+figure; plot(smoothdata(sp(i,:),'movmean',125)); yyaxis right; plot(smoothdata(head_to_tip(i,:)','movmean',125))
+%  figure; plot(smooth(sp(i,:),125)); yyaxis right; plot(smooth(head_to_tip(i,:),125))
+q = egg_time - egg_time(i)+12000;
+q2 = ov_time - egg_time(i)+12000;
+q3 = et_time - egg_time(i)+12000;
 
+for jj = (i-3):1:(i+3)
+line([q(jj),q(jj)],[-10,10]);
+line([q2(jj),q2(jj)],[-10,10],'color','k');
+line([q3(jj),q3(jj)],[-10,10],'color','m');
 
-
-%% Plot individual flies over time
-for i =1:1:length(trx(1,:))
-    [~, b] = find(f == i);
-
-    figure; imagesc(sp(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et(b)),8,[.5 .5 .5],'filled')
-    box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-    xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
-    
-    figure; imagesc(head_to_tip(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et(b)),8,[.5 .5 .5],'filled')
-    box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.2 2.6]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-    xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
-    
-    
 end
+% 
+% 
+% 
+% %% Plot individual flies over time
+% for i =1:1:length(trx(1,:))
+%     [~, b] = find(f == i);
+% 
+%     figure; imagesc(sp(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et(b)),8,[.5 .5 .5],'filled')
+%     box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+%     xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
+%     
+%     figure; imagesc(head_to_tip(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et(b)),8,[.5 .5 .5],'filled')
+%     box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.3 2.7]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+%     xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
+%     
+%     
+% end
+% 
+% for i =1:1:length(trx(1,:))
+%     [~, b] = sort(et);
+%     et_b = et(b);
+%     f_b = f(b);
+%     sp_b = sp(b,:);
+%     head_to_tip_b = head_to_tip(b,:);
+%     [~, b] = find(f_b == i);
+% 
+%     figure; imagesc(sp_b(b,:)); hold on; scatter(window_len-et_b(b).*2,1:1:length(et_b(b)),8,[.5 .5 .5],'filled')
+%     box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+%     xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
+%     
+%     figure; imagesc(head_to_tip_b(b,:)); hold on; scatter(window_len-et_b(b).*2,1:1:length(et_b(b)),8,[.5 .5 .5],'filled')
+%     box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.3 2.7]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+%     xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
+% end
+% 
 
-for i =1:1:length(trx(1,:))
-    [~, b] = sort(et);
-    et_b = et(b);
-    f_b = f(b);
-    sp_b = sp(b,:);
-    head_to_tip_b = head_to_tip(b,:);
-    [~, b] = find(f_b == i);
-
-    figure; imagesc(sp_b(b,:)); hold on; scatter(window_len-et_b(b).*2,1:1:length(et_b(b)),8,[.5 .5 .5],'filled')
-    box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-    xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
-    
-    figure; imagesc(head_to_tip_b(b,:)); hold on; scatter(window_len-et_b(b).*2,1:1:length(et_b(b)),8,[.5 .5 .5],'filled')
-    box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.2 2.6]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-    xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
-end
-
-
-%% Plot speed no hold things around an egg laying event ordered by exploration duration
+%% Plot speed 2hz hold around an egg laying event ordered by exploration duration
 [~, b] = sort(et);
 
 figure; imagesc(sp(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
 box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
+xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Speed 2hz hold (mm/sec) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len-ovt(b).*2,1:1:length(ovt),8,'k','filled')
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
+
+
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(sp(b,:))./sqrt(length(b));
 mean_data = nanmean(sp(b,:));
 fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(sp),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
-xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Mean speed (mm/sec) of all individual egg-laying events with SEM');
+plot((0:1:2*window_len),nanmean(sp),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Mean speed 2hz hold (mm/sec) of all individual egg-laying events with SEM');
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 %% Plot head to tip distance around an egg laying event ordered by exploration duration
 
 [~, b] = sort(et);
 figure; imagesc(head_to_tip(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
-box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.2 2.6]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.3 2.7]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
 xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len-ovt(b).*2,1:1:length(et),8,'k','filled')
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
+
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(head_to_tip(b,:))./sqrt(length(b));
 mean_data = nanmean(head_to_tip(b,:));
 fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(head_to_tip),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+plot((0:1:2*window_len),nanmean(head_to_tip),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
 xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Head to tip distance (mm) of all individual egg-laying events with SEM');
-
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(head_to_tip(b,:))./sqrt(length(b));
@@ -379,41 +411,41 @@ xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Head to tip d
 
 
 %% Plot thorax to tip distance around an egg laying event ordered by exploration duration
-
-[~, b] = sort(et);
-figure; imagesc(tip_to_thorax(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
-box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([1 1.5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Thorax to tip distance (mm) of individual egg-laying events'); colorbar;
-
-figure; hold on; box on; title(title_string);
-standard_error =nanstd(tip_to_thorax(b,:))./sqrt(length(b));
-mean_data = nanmean(tip_to_thorax(b,:));
-fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(tip_to_thorax),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
-xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Thorax to tip distance (mm) of all individual egg-laying events with SEM');
-
-figure; hold on; box on; title(title_string);
-standard_error =nanstd(tip_to_thorax(b,:))./sqrt(length(b));
-mean_data = nanmean(tip_to_thorax(b,:));
-fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(tip_to_thorax),'k'); set(gca,'xtick',0:(25*5):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):5:(window_len/25)); set(gca,'xlim',[window_len-45*25, window_len+45*25]);
-xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Thorax to tip distance (mm) of all individual egg-laying events with SEM');
+% 
+% [~, b] = sort(et);
+% figure; imagesc(tip_to_thorax(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
+% box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([1 1.5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+% xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Thorax to tip distance (mm) of individual egg-laying events'); colorbar;
+% 
+% figure; hold on; box on; title(title_string);
+% standard_error =nanstd(tip_to_thorax(b,:))./sqrt(length(b));
+% mean_data = nanmean(tip_to_thorax(b,:));
+% fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
+% plot((0:1:2*window_len),nanmean(tip_to_thorax),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+% xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Thorax to tip distance (mm) of all individual egg-laying events with SEM');
+% 
+% figure; hold on; box on; title(title_string);
+% standard_error =nanstd(tip_to_thorax(b,:))./sqrt(length(b));
+% mean_data = nanmean(tip_to_thorax(b,:));
+% fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
+% plot((0:1:2*window_len),nanmean(tip_to_thorax),'k'); set(gca,'xtick',0:(25*5):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):5:(window_len/25)); set(gca,'xlim',[window_len-45*25, window_len+45*25]);
+% xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Thorax to tip distance (mm) of all individual egg-laying events with SEM');
 
 %% Plot head to prob distance around an egg laying event ordered by exploration duration
 
-[~, b] = sort(et);
-figure; imagesc(head_to_prob(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
-box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([.25 .35]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to prob distance (mm) of individual egg-laying events'); colorbar;
-
-figure; hold on; box on; title(title_string);
-standard_error =nanstd(head_to_prob(b,:))./sqrt(length(b));
-mean_data = nanmean(head_to_prob(b,:));
-fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(head_to_prob),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
-xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Head to prob distance (mm) of all individual egg-laying events with SEM');
-
-clearvars -except trx eggs title_string
+% [~, b] = sort(et);
+% figure; imagesc(head_to_prob(b,:)); hold on; scatter(window_len-et(b).*2,1:1:length(et),8,[.5 .5 .5],'filled')
+% box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([.25 .35]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+% xlabel('Time with respect to egg-laying event (minutes)'); ylabel('Head to prob distance (mm) of individual egg-laying events'); colorbar;
+% 
+% figure; hold on; box on; title(title_string);
+% standard_error =nanstd(head_to_prob(b,:))./sqrt(length(b));
+% mean_data = nanmean(head_to_prob(b,:));
+% fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
+% plot((0:1:2*window_len),nanmean(head_to_prob),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+% xlabel('Time with respect to egg-laying event (seconds)'); ylabel('Head to prob distance (mm) of all individual egg-laying events with SEM');
+% 
+% clearvars -except trx eggs title_string
 
 
 %% Plot various things around an exp start event ordered by exploration duration
@@ -435,8 +467,10 @@ end
 
 sp = []; pos = [];  th = []; sub = []; et = [];rt = [];
 for i =1:1:length(c)
-    sp(i,:) = (trx(1,eggs.fly(c(i))).speed((eggs.explore_start_time(c(i))-window_len):eggs.explore_start_time(c(i))+window_len));
-    et(i) = (eggs.egg_time(c(i))-eggs.explore_start_time(c(i)))./2;
+    sp(i,:) = (trx(1,eggs.fly(c(i))).speed_2hz_hold((eggs.explore_start_time(c(i))-window_len):eggs.explore_start_time(c(i))+window_len));
+    et(i) = (eggs.egg_time(c(i))-eggs.explore_start_time(c(i)))./25;
+                ovt(i) = (ovu_end_array(c(i))-eggs.explore_start_time(c(i)))./25;
+
     tip_to_thorax(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax((eggs.explore_start_time(c(i))-window_len):eggs.explore_start_time(c(i))+window_len));
     tip_to_thorax_x(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax_x((eggs.explore_start_time(c(i))-window_len):eggs.explore_start_time(c(i))+window_len));
     tip_to_thorax_y(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax_y((eggs.explore_start_time(c(i))-window_len):eggs.explore_start_time(c(i))+window_len));
@@ -464,33 +498,47 @@ end
 
 
 
-%% Plot speed no hold things around an egg laying event ordered by exploration duration
+%% Plot speed 2hz hold things around an egg laying event ordered by exploration duration
 [~, b] = sort(et);
 
-figure; imagesc(sp(b,:)); hold on; scatter(1.*(window_len+et(b).*2),1:1:length(et),8,[.5 .5 .5],'filled')
+figure; imagesc(sp(b,:)); hold on; scatter(1.*(window_len+et(b).*25),1:1:length(et),8,[.5 .5 .5],'filled')
 box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
-xlabel('Time with respect to explore start event (minutes)'); ylabel('Speed (mm/sec) of individual egg-laying events'); colorbar;
+xlabel('Time with respect to explore start event (minutes)'); ylabel('Speed 2 hz hold (mm/sec) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len+ovt(b).*25,1:1:length(ovt),8,'k','filled')
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(sp(b,:))./sqrt(length(b));
 mean_data = nanmean(sp(b,:));
 fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(sp),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
-xlabel('Time with respect to explore start event (seconds)'); ylabel('Mean speed (mm/sec) of all individual egg-laying events with SEM');
+plot((0:1:2*window_len),nanmean(sp),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+xlabel('Time with respect to explore start event (seconds)'); ylabel('Mean 2 hz hold speed (mm/sec) of all individual egg-laying events with SEM');
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 %% Plot head to tip distance around an egg laying event ordered by exploration duration
 
 [~, b] = sort(et);
 figure; imagesc(head_to_tip(b,:)); hold on; scatter(1.*(window_len+et(b).*2),1:1:length(et),8,[.5 .5 .5],'filled')
-box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.2 2.6]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.3 2.7]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
 xlabel('Time with respect to explore start event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len+ovt(b).*2,1:1:length(ovt),8,'k','filled')
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 figure; hold on; box on; title(title_string);
 standard_error =nanstd(head_to_tip(b,:))./sqrt(length(b));
 mean_data = nanmean(head_to_tip(b,:));
 fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
-plot((0:1:2*window_len),nanmean(head_to_tip),'k'); set(gca,'xtick',0:(25*30):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):30:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+plot((0:1:2*window_len),nanmean(head_to_tip),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
 xlabel('Time with respect to explore start event (seconds)'); ylabel('Head to tip distance (mm) of all individual egg-laying events with SEM');
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
 
 %% Plot thorax to tip distance around an egg laying event ordered by exploration duration
 
@@ -522,4 +570,85 @@ xlabel('Time with respect to explore start event (seconds)'); ylabel('Head to ti
 
 clearvars -except trx eggs title_string
 
+%% aligning to ovulation end
+[a , ~] =find(eggs.egg_time > 0);
+window_len = 360*25; % window_len on each side in frames
+c = [];
+f= [];
 
+for i = 1:1:length(a)
+    if(ovu_end_array(a(i)) > (window_len+1) && (ovu_end_array(a(i))+window_len) <= length(trx(1,eggs.fly(a(i))).x))
+        c = [c a(i)];
+                f = [f eggs.fly(a(i))];
+
+    end
+end
+
+
+sp = []; pos = [];  th = []; sub = []; et = [];rt = [];
+for i =1:1:length(c)
+    sp(i,:) = (trx(1,eggs.fly(c(i))).speed_2hz_hold((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    et(i) = (eggs.egg_time(c(i))-eggs.explore_start_time(c(i)))./2;
+                ovt(i) = (eggs.egg_time(c(i))-ovu_end_array(c(i)))./2;
+    et2(i) = (eggs.explore_start_time(c(i))-ovu_end_array(c(i)))./2;
+
+    tip_to_thorax(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    tip_to_thorax_x(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax_x((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    tip_to_thorax_y(i,:) = (trx(1,eggs.fly(c(i))).tip_to_thorax_y((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    
+    thorax_to_head(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_head((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    thorax_to_head_x(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_head_x((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    thorax_to_head_y(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_head_y((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    
+    head_to_prob(i,:) = (trx(1,eggs.fly(c(i))).head_to_prob((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    head_to_prob_x(i,:) = (trx(1,eggs.fly(c(i))).head_to_prob_x((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    head_to_prob_y(i,:) = (trx(1,eggs.fly(c(i))).head_to_prob_y((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    
+    thorax_to_prob(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_prob((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    thorax_to_prob_x(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_prob_x((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    thorax_to_prob_y(i,:) = (trx(1,eggs.fly(c(i))).thorax_to_prob_y((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    
+    head_to_tip(i,:) = (trx(1,eggs.fly(c(i))).head_to_tip((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    head_to_tip_x(i,:) = (trx(1,eggs.fly(c(i))).head_to_tip_x((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    head_to_tip_y(i,:) = (trx(1,eggs.fly(c(i))).head_to_tip_y((ovu_end_array(c(i))-window_len):ovu_end_array(c(i))+window_len));
+    
+end
+
+
+
+
+%% Plot speed 2hz  things around an egg laying event ordered by exploration duration
+[~, b] = sort(ovt);
+
+figure; imagesc(sp(b,:)); hold on; scatter(1.*(window_len+et2(b).*2),1:1:length(et),8,[.5 .5 .5],'filled')
+box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([0 5]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+xlabel('Time with respect to ovulation end  event (minutes)'); ylabel('Speed 2hz hold (mm/sec) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len+ovt(b).*2,1:1:length(ovt),8,'k','filled')
+
+figure; hold on; box on; title(title_string);
+standard_error =nanstd(sp(b,:))./sqrt(length(b));
+mean_data = nanmean(sp(b,:));
+fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
+plot((0:1:2*window_len),nanmean(sp),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+xlabel('Time with respect to ovulation end event (seconds)'); ylabel('Mean speed 2hz hld (mm/sec) of all individual egg-laying events with SEM');
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
+
+%% Plot head to tip distance around an egg laying event ordered by exploration duration
+
+[~, b] = sort(ovt);
+figure; imagesc(head_to_tip(b,:)); hold on; scatter(1.*(window_len+et2(b).*2),1:1:length(et),8,[.5 .5 .5],'filled')
+box on; set(gca,'xlim',[0 window_len*2]); title(title_string); colormap(gca,'cool'); caxis([2.3 2.7]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xtick',[0:(60*25):window_len*2]); set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+xlabel('Time with respect to ovulation end  event (minutes)'); ylabel('Head to tip distance (mm) of individual egg-laying events'); colorbar;
+hold on; scatter(window_len+ovt(b).*2,1:1:length(ovt),8,'k','filled')
+
+figure; hold on; box on; title(title_string);
+standard_error =nanstd(head_to_tip(b,:))./sqrt(length(b));
+mean_data = nanmean(head_to_tip(b,:));
+fill([(0:1:2*window_len),fliplr(0:1:2*window_len)],[mean_data+standard_error,fliplr(mean_data-standard_error)],[0 0 .9],'linestyle','none');
+plot((0:1:2*window_len),nanmean(head_to_tip),'k'); set(gca,'xtick',0:(25*60):window_len*2); set(gca,'xticklabel',(-1.*window_len/25):60:(window_len/25)); set(gca,'xlim',[0, window_len*2]);
+xlabel('Time with respect to ovulation end event (seconds)'); ylabel('Head to tip distance (mm) of all individual egg-laying events with SEM');
+set(gca,'xticklabel',{'-6','-5','-4','-3','-2','-1','0','1','2','3','4','5','6'});
+box off
+set(gca,'TickDir','out')
