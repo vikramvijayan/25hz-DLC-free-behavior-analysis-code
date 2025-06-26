@@ -1,5 +1,4 @@
 # 25hz-DLC-free-behavior-analysis-code
- 25hz-DLC-free-behavior-analysis-code
 
 This is basic code to analyze 25hz egg laying tracking using DeepLabCut. It can obviously be used for tracking at other speeds (may need to change some fixed parameters in the code). 
 
